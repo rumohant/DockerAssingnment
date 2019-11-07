@@ -62,7 +62,9 @@ then 			docker inspect tomcat:7
                     }
                 ]
             },
-14. Try to access the Tomcat's home page from your machine/vm.  DOUBT---> curl 172.18.0.4:8081
+14. Try to access the Tomcat's home page from your machine/vm.  
+
+	Ans---> http://3.133.102.67:8888
 15. What is the disk size of Apache Tomcat image?
   
 		Ans--->  $ docker image ls
@@ -164,14 +166,183 @@ root@09d86a2c69ec:/#
 
 
 28. Install software of your choice in ubuntu container using "apt-get install"
+
+	Ans--> Installing Atom S/W(sudo apt install atom---> fecting some issue so installed " sudo snap install atom --classic" )
+	
+snap install atom
+
+root@ip-172-31-31-224:/home/ubuntu# sudo snap install atom
+error: This revision of snap "atom" was published using classic confinement and thus may perform
+       arbitrary system changes outside of the security sandbox that snaps are usually confined to,
+       which may put your system at risk.
+
+       If you understand and want to proceed repeat the command including --classic.
+root@ip-172-31-31-224:/home/ubuntu#
+root@ip-172-31-31-224:/home/ubuntu# sudo snap install atom --classic
+atom 1.41.0 from Snapcrafters installed
+root@ip-172-31-31-224:/home/ubuntu# ls -la
+total 40
+drwxr-xr-x 5 ubuntu ubuntu 4096 Nov  6 07:05 .
+drwxr-xr-x 3 root   root   4096 Nov  6 06:19 ..
+-rw------- 1 ubuntu ubuntu   41 Nov  6 09:26 .bash_history
+-rw-r--r-- 1 ubuntu ubuntu  220 Apr  4  2018 .bash_logout
+-rw-r--r-- 1 ubuntu ubuntu 3771 Apr  4  2018 .bashrc
+drwx------ 2 ubuntu ubuntu 4096 Nov  6 06:49 .cache
+drwx------ 3 ubuntu ubuntu 4096 Nov  6 06:49 .gnupg
+-rw-r--r-- 1 ubuntu ubuntu  807 Apr  4  2018 .profile
+drwx------ 2 ubuntu ubuntu 4096 Nov  6 06:19 .ssh
+-rw-r--r-- 1 ubuntu ubuntu    0 Nov  6 06:50 .sudo_as_admin_successful
+-rw-r--r-- 1 root   root     31 Nov  6 07:05 file.txt
+root@ip-172-31-31-224:/home/ubuntu# atom
+Command 'atom' is available in '/snap/bin/atom'
+The command could not be located because '/snap/bin' is not included in the PATH environment variable.
+atom: command not found
+root@ip-172-31-31-224:/home/ubuntu# cd /snap/bin/
+root@ip-172-31-31-224:/snap/bin# ls -la
+total 8
+drwxr-xr-x 2 root root 4096 Nov  6 09:47 .
+drwxr-xr-x 6 root root 4096 Nov  6 09:47 ..
+lrwxrwxrwx 1 root root   13 Nov  6 06:19 amazon-ssm-agent.ssm-cli -> /usr/bin/snap
+lrwxrwxrwx 1 root root    8 Nov  6 09:47 apm -> atom.apm
+lrwxrwxrwx 1 root root   13 Nov  6 09:47 atom -> /usr/bin/snap
+lrwxrwxrwx 1 root root   13 Nov  6 09:47 atom.apm -> /usr/bin/snap
+
 29. Now exit the ubuntu shell, are you back to your host machine, if not, come back to the host machine.
-30. Check if the ubuntu container is running.
+
+	Ans---> docker run -it ubuntu and then type "exit", it will redirect to ubuntu host machine.
+	Result--->
+
+	root@ip-172-31-31-224:/home/ubuntu# docker run -it ubuntu
+root@aa63f46e83d6:/# ls -la
+total 72
+drwxr-xr-x   1 root root 4096 Nov  6 10:37 .
+drwxr-xr-x   1 root root 4096 Nov  6 10:37 ..
+-rwxr-xr-x   1 root root    0 Nov  6 10:37 .dockerenv
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 bin
+drwxr-xr-x   2 root root 4096 Apr 24  2018 boot
+drwxr-xr-x   5 root root  360 Nov  6 10:37 dev
+drwxr-xr-x   1 root root 4096 Nov  6 10:37 etc
+drwxr-xr-x   2 root root 4096 Apr 24  2018 home
+drwxr-xr-x   8 root root 4096 May 23  2017 lib
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 lib64
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 media
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 mnt
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 opt
+dr-xr-xr-x 112 root root    0 Nov  6 10:37 proc
+drwx------   2 root root 4096 Oct 29 21:25 root
+drwxr-xr-x   1 root root 4096 Oct 31 22:20 run
+drwxr-xr-x   1 root root 4096 Oct 31 22:20 sbin
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 srv
+dr-xr-xr-x  13 root root    0 Nov  6 10:37 sys
+drwxrwxrwt   2 root root 4096 Oct 29 21:25 tmp
+drwxr-xr-x   1 root root 4096 Oct 29 21:25 usr
+drwxr-xr-x   1 root root 4096 Oct 29 21:25 var
+root@aa63f46e83d6:/# exit
+exit
+root@ip-172-31-31-224:/home/ubuntu#
+
+30. Check if the ubuntu container is running. (No)
 31. Create a new ubuntu container out of the same image as that previous container in attached mode.
-32. Login as a root user
+	Ans--> 	docker create ubuntu
+		docker ps -a
+		 docker start aa63f46e83d6
+		 docker attach aa63f46e83d6
+root@ip-172-31-31-224:/home/ubuntu# docker image ls
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+ubuntu              latest              775349758637        5 days ago          64.2MB
+tomcat              7                   e3a393545a10        2 weeks ago         506MB
+root@ip-172-31-31-224:/home/ubuntu# docker create ubuntu
+caf80554e855445f7600b557c6bff8bc68a5e3fc89c7ba2c08ef6f88f2a41cc7
+root@ip-172-31-31-224:/home/ubuntu# docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                        PORTS               NAMES
+caf80554e855        ubuntu              "/bin/bash"         12 seconds ago      Created                                           crazy_shirley
+aa63f46e83d6        ubuntu              "/bin/bash"         10 minutes ago      Exited (127) 47 seconds ago                       frosty_antonelli
+41f1e729eed6        tomcat:7            "catalina.sh run"   4 hours ago         Exited (143) 4 hours ago                          reverent_chatelet
+root@ip-172-31-31-224:/home/ubuntu# docker attach caf80554e855
+You cannot attach to a stopped container, start it first
+root@ip-172-31-31-224:/home/ubuntu# dcoker start caf80554e855
+
+Command 'dcoker' not found, did you mean:
+
+  command 'docker' from snap docker (18.06.1-ce)
+  command 'docker' from deb docker.io
+
+See 'snap info <snapname>' for additional versions.
+
+root@ip-172-31-31-224:/home/ubuntu# docker attach caf80554e855
+You cannot attach to a stopped container, start it first
+
+	
+32. Login as a root user. 
+
+	Ans--> Alredy logged in---> root@ip-172-31-31-224	
 33. Check if you can see the file created in previous container, you will not see the file as well as software that you installed in the previous container. Now kill this Container.
+
+	Ans----> First install VI editor s/w
+		apt-get update
+		apt-get -y install vim
+		vi rutujaFile.txt (Created file inide ubuntu)
+
+root@05ed2d0786d4:/# ls -la
+total 88
+drwxr-xr-x   1 root root 4096 Nov  6 10:54 .
+drwxr-xr-x   1 root root 4096 Nov  6 10:54 ..
+-rwxr-xr-x   1 root root    0 Nov  6 10:54 .dockerenv
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 bin
+drwxr-xr-x   2 root root 4096 Apr 24  2018 boot
+drwxr-xr-x   5 root root  360 Nov  6 10:54 dev
+drwxr-xr-x   1 root root 4096 Nov  6 10:58 etc
+drwxr-xr-x   2 root root 4096 Apr 24  2018 home
+drwxr-xr-x   1 root root 4096 May 23  2017 lib
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 lib64
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 media
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 mnt
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 opt
+dr-xr-xr-x 112 root root    0 Nov  6 10:54 proc
+drwx------   2 root root 4096 Oct 29 21:25 root
+drwxr-xr-x   1 root root 4096 Oct 31 22:20 run
+drwxr-xr-x   1 root root 4096 Oct 31 22:20 sbin
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 srv
+dr-xr-xr-x  13 root root    0 Nov  6 10:37 sys
+drwxrwxrwt   1 root root 4096 Nov  6 10:58 tmp
+drwxr-xr-x   1 root root 4096 Oct 29 21:25 usr
+drwxr-xr-x   1 root root 4096 Oct 29 21:25 var
+root@05ed2d0786d4:/# vi rutujafile.txt
+root@05ed2d0786d4:/# ls -la
+total 92
+drwxr-xr-x   1 root root 4096 Nov  6 11:02 .
+drwxr-xr-x   1 root root 4096 Nov  6 11:02 ..
+-rwxr-xr-x   1 root root    0 Nov  6 10:54 .dockerenv
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 bin
+drwxr-xr-x   2 root root 4096 Apr 24  2018 boot
+drwxr-xr-x   5 root root  360 Nov  6 10:54 dev
+drwxr-xr-x   1 root root 4096 Nov  6 10:58 etc
+drwxr-xr-x   2 root root 4096 Apr 24  2018 home
+drwxr-xr-x   1 root root 4096 May 23  2017 lib
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 lib64
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 media
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 mnt
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 opt
+dr-xr-xr-x 110 root root    0 Nov  6 10:54 proc
+drwx------   1 root root 4096 Nov  6 11:02 root
+drwxr-xr-x   1 root root 4096 Oct 31 22:20 run
+-rw-r--r--   1 root root   15 Nov  6 11:02 rutujafile.txt
+drwxr-xr-x   1 root root 4096 Oct 31 22:20 sbin
+drwxr-xr-x   2 root root 4096 Oct 29 21:25 srv
+dr-xr-xr-x  13 root root    0 Nov  6 10:37 sys
+drwxrwxrwt   1 root root 4096 Nov  6 10:58 tmp
+drwxr-xr-x   1 root root 4096 Oct 29 21:25 usr
+drwxr-xr-x   1 root root 4096 Oct 29 21:25 var
+root@05ed2d0786d4:/# exit
+exit
+
+
 34. Do you have the previous ubuntu container where you created the file and installed the software? If no reapeat step 25 to 29.
+
+	Ans---> Yes I have created file and installed Vi editor Sw
+
 35. Create an Image out of the existing container.
-36. Now Create a Container out of this image and login into it to see if you can see the file and software installed by you in the previous container.
+36. Now Cr	eate a Container out of this image and login into it to see if you can see the file and software installed by you in the previous container.
 37. Do you have running tomcat container? If yes, Stop it and kill all tomcat container.
 38. Create an index.html file with following code in it:-
 	<h1>This is Tomcat Container</h1>
@@ -179,9 +350,18 @@ Now, Start a tomcat container in such a way that on hitting its URL for home pag
 39. type below command:-
 	docker images --help
 Now, try to run command that proves the concept of following three options:-
-1. -a
+1. -a -----> 
+	ubuntu@ip-172-31-31-224:~$ docker images -a
+	REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+	ubuntu              latest              775349758637        6 days ago          64.2MB
+	tomcat              7                   e3a393545a10        2 weeks ago         506MB
+
 2. -f
-3. -q
+3. -q  
+	---> ubuntu@ip-172-31-31-224:~$ docker images -q
+	775349758637
+	e3a393545a10
+
 
 write atleast 1 command using each option above and prove their concepts as described in the --help.
 
@@ -190,9 +370,30 @@ write atleast 1 command using each option above and prove their concepts as desc
 	docker ps --help
 Now, try to run command that proves the concept of following six options:-
 1. -a
+	docker pa -a
+	ubuntu@ip-172-31-31-224:~$ docker ps -a
+CONTAINER ID        IMAGE               COMMAND              CREATED             STATUS                        PORTS               NAMES
+12845801aac8        ubuntu              "/usr/bin/ top -b"   9 minutes ago       Created                                           topdemo01
+54ca73def134        ubuntu              "/bin/bash"          17 minutes ago      Exited (0) 15 minutes ago                         bold_gould
+a662bce10112        ubuntu              "/bin/bash"          31 minutes ago      Exited (127) 9 minutes ago                        con1
+432b5feb2c87        ubuntu              "/bin/bash"          47 minutes ago      Exited (0) 33 minutes ago                         bold_keldysh
+5437e2dcf25a        ubuntu              "/bin/bash"          24 hours ago        Exited (127) 51 minutes ago                       modest_blackwell
+05ed2d0786d4        ubuntu              "/bin/bash"          24 hours ago        Exited (0) 24 hours ago                           pensive_antonelli
+caf80554e855        ubuntu              "/bin/bash"          24 hours ago        Created                                           crazy_shirley
+aa63f46e83d6        ubuntu              "/bin/bash"          24 hours ago        Exited (127) 24 hours ago                         frosty_antonelli
+41f1e729eed6        tomcat:7            "catalina.sh run"    28 hours ago        Exited (143) 28 hours ago                         reverent_chatelet
+
 2. -f
-3. -q
+3. -q  -> continer id were not coming
 4. -n
 5. -l
+	ubuntu@ip-172-31-31-224:~$ docker ps -l
+CONTAINER ID        IMAGE               COMMAND              CREATED             STATUS              PORTS               NAMES
+12845801aac8        ubuntu              "/usr/bin/ top -b"   10 minutes ago      Created                                 topdemo01
+
 6. -s
+ubuntu@ip-172-31-31-224:~$ docker ps -s
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES               SIZE
+
+
 
