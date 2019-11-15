@@ -1,0 +1,184 @@
+Your supermarket company has a simple web service built on nginx that serves a static list of fresh fruit available in their stores. They want to run this service as a Docker container in their new swarm environment, but first they need you to build a Docker image for this service.
+
+On this repo (https://github.com/satyensingh/full-docker-training-16-Z-Assignment1.git), you will find the files needed to create the image. Create a Dockerfile to define the image according to the provided specifications, then test the image by running a container in detached mode and verifying that you can access the fresh fruit data from the application.
+
+The image should meet the following specifications:
+
+1. Use nginx tag 1.15.8 as the base image.
+2. Add the static fresh fruit data to the image so that it will be served by the nginx server. The data file is located on the server at static/fruit.json under the project directory. Add this file to the image at the location /usr/share/nginx/html/fruit.json.
+3. Add the nginx configuration file. This file is located on the server in the project directory and is called nginx.conf. Add this file to the image at /etc/nginx/nginx.conf.
+4. The image should expose port 80.
+5. Use the following as the default command: nginx -g daemon off;.
+6. Build the image with the tag fruit-list:1.0.0
+
+Once you have built the image you should be able to test it by running it as a container:
+
+docker run --name fruit-list -d -p 8080:80 fruit-list:1.0.0
+
+
+Verify that the container serves the required data by making a request to it on port 8080. If everything is set up correctly, you should get a JSON list of fruits.
+
+curl localhost:8080
+
+
+[NOTE: Write the series of commands to achieve above in this file below the question scenario with documentation]
+
+
+Ans------>
+Step 1---> 
+ubuntu@ip-172-31-6-218:~$ mkdir fruitproject
+ubuntu@ip-172-31-6-218:~$ vi fruitproject
+ubuntu@ip-172-31-6-218:~$ pwd
+/home/ubuntu
+ubuntu@ip-172-31-6-218:~$ sudo su
+root@ip-172-31-6-218:/home/ubuntu# ls
+fruitproject
+root@ip-172-31-6-218:/home/ubuntu# cd fruitproject
+root@ip-172-31-6-218:/home/ubuntu/fruitproject# mkdir static
+root@ip-172-31-6-218:/home/ubuntu/fruitproject# cd static
+root@ip-172-31-6-218:/home/ubuntu/fruitproject/static# vi fruit.json
+root@ip-172-31-6-218:/home/ubuntu/fruitproject/static# ls
+fruit.json
+
+{
+  "description": "A list of fruits.",
+  "fruits": [
+    "apple",
+    "apricot",
+    "avocado",
+    "banana",
+    "bell pepper",
+    "bilberry",
+    "blackberry",
+    "blackcurrant",
+    "blood orange",
+    "blueberry",
+    "boysenberry",
+    "breadfruit",
+    "canary melon",
+    "cantaloupe",
+    "cherimoya",
+    "cherry",
+    "chili pepper",
+    "clementine",
+    "cloudberry",
+    "coconut",
+    "cranberry",
+    "cucumber",
+    "currant",
+    "damson",
+    "date",
+    "dragonfruit",
+    "durian",
+    "eggplant",
+    "elderberry",
+    "feijoa",
+    "fig",
+    "goji berry",
+    "gooseberry",
+    "grape",
+    "grapefruit",
+    "guava",
+    "honeydew",
+    "huckleberry",
+    "jackfruit",
+    "jambul",
+    "jujube",
+    "kiwi fruit",
+    "kumquat",
+    "lemon",
+    "lime",
+    "loquat",
+    "lychee",
+    "mandarine",
+    "mango",
+    "mulberry",
+    "nectarine",
+    "nut",
+    "olive",
+    "orange",
+    "pamelo",
+    "papaya",
+    "passionfruit",
+    "peach",
+    "pear",
+    "persimmon",
+    "physalis",
+    "pineapple",
+    "plum",
+    "pomegranate",
+    "pomelo",
+    "purple mangosteen",
+    "quince",
+    "raisin",
+    "rambutan",
+    "raspberry",
+    "redcurrant",
+    "rock melon",
+    "salal berry",
+    "satsuma",
+    "star fruit",
+    "strawberry",
+    "tamarillo",
+    "tangerine",
+    "tomato",
+    "ugli fruit",
+    "watermelon"
+  ]
+}
+
+Step2--> making nginx.conf.inside projectfruit directory
+root@ip-172-31-6-218:/home/ubuntu/fruitproject# vi nginx.conf
+
+below are the configuration setup for nginx.conf
+
+events {}
+http{
+  server {
+      listen 80;
+
+      location / {
+          index fruit.json;
+          root /usr/share/nginx/html;
+      }
+  }
+}
+
+Step 3----> Creating a Dockerfile inside home/ubuntu 
+root@ip-172-31-6-218:/home/ubuntu# vi Dockerfile
+root@ip-172-31-6-218:/home/ubuntu# ls
+Dockerfile  fruitproject
+
+
+FROM nginx:1.15.8
+RUN apt-get update
+WORKDIR /usr/share/nginx/html
+ADD ./fruitproject/static/fruit.json ./
+WORKDIR /etc/nginx
+ADD ./fruitproject/nginx.conf ./
+EXPOSE 80
+
+Step---4 
+root@ip-172-31-6-218:/home/ubuntu# docker build -t fruit-list:1.0.0 .
+Sending build context to Docker daemon  24.06kB
+
+Step---> Successfully tagged fruit-list:1.0.0
+root@ip-172-31-6-218:/home/ubuntu# docker run --name fruit-list -d -p 8080:80 fruit-list:1.0.0
+223be4d8009cc38c89051f74c96fec9a6f17fd0ad5cce7f554a03944d9d4d46a
+root@ip-172-31-6-218:/home/ubuntu# curl localhost:8080
+
+
+
+root@ip-172-31-6-218:/home/ubuntu# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED              SIZE
+fruit-list          1.0.0               e172624c71b9        About a minute ago   126MB
+ubuntu              latest              775349758637        13 days ago          64.2MB
+nginx               latest              540a289bab6c        3 weeks ago          126MB
+alpine              latest              965ea09ff2eb        3 weeks ago          5.55MB
+tomcat              7                   e3a393545a10        3 weeks ago          506MB
+nginx               1.15.8              f09fe80eb0e7        9 months ago         109MB
+hello-world         latest              fce289e99eb9        10 months ago        1.84kB
+
+
+
+ 
