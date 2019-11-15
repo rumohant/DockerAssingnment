@@ -179,6 +179,209 @@ tomcat              7                   e3a393545a10        3 weeks ago         
 nginx               1.15.8              f09fe80eb0e7        9 months ago         109MB
 hello-world         latest              fce289e99eb9        10 months ago        1.84kB
 
+************************************************************************************************
+root@ip-172-31-6-218:/home/ubuntu# ls
+Dockerfile  fruitproject
+root@ip-172-31-6-218:/home/ubuntu# docker build -t fruit-list:1.0.0 .
+Sending build context to Docker daemon  24.06kB
+Error response from daemon: No build stage in current context
+root@ip-172-31-6-218:/home/ubuntu# vi Dockerfile
+root@ip-172-31-6-218:/home/ubuntu# docker build -t fruit-list:1.0.0 .
+Sending build context to Docker daemon  24.06kB
+Step 1/7 : FROM nginx:1.15.8
+1.15.8: Pulling from library/nginx
+6ae821421a7d: Pull complete
+da4474e5966c: Pull complete
+eb2aec2b9c9f: Pull complete
+Digest: sha256:dd2d0ac3fff2f007d99e033b64854be0941e19a2ad51f174d9240dda20d9f534
+Status: Downloaded newer image for nginx:1.15.8
+ ---> f09fe80eb0e7
+Step 2/7 : RUN apt-get update
+ ---> Running in 05412ac42474
+Get:1 http://security-cdn.debian.org/debian-security stretch/updates InRelease [94.3 kB]
+Ign:2 http://cdn-fastly.deb.debian.org/debian stretch InRelease
+Get:3 http://cdn-fastly.deb.debian.org/debian stretch-updates InRelease [91.0 kB]
+Get:5 http://security-cdn.debian.org/debian-security stretch/updates/main amd64 Packages [508 kB]
+Get:4 http://cdn-fastly.deb.debian.org/debian stretch Release [118 kB]
+Get:6 http://cdn-fastly.deb.debian.org/debian stretch Release.gpg [2365 B]
+Get:7 http://cdn-fastly.deb.debian.org/debian stretch-updates/main amd64 Packages [27.9 kB]
+Get:8 http://cdn-fastly.deb.debian.org/debian stretch/main amd64 Packages [7086 kB]
+Fetched 7927 kB in 1s (4352 kB/s)
+Reading package lists...
+Removing intermediate container 05412ac42474
+ ---> ffe483e8dfbb
+Step 3/7 : WORKDIR /usr/share/nginx/html
+ ---> Running in 30677c7467e6
+Removing intermediate container 30677c7467e6
+ ---> a78251627ebe
+Step 4/7 : ADD ./fruitproject/share/fruit.json ./
+ADD failed: stat /var/lib/docker/tmp/docker-builder695513083/fruitproject/share/fruit.json: no such file or directory
+root@ip-172-31-6-218:/home/ubuntu# docker run --name fruit-list -d -p 8080:80 fruit-list:1.0.0
+Unable to find image 'fruit-list:1.0.0' locally
+docker: Error response from daemon: pull access denied for fruit-list, repository does not exist or may require 'docker login'.
+See 'docker run --help'.
+root@ip-172-31-6-218:/home/ubuntu# docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+root@ip-172-31-6-218:/home/ubuntu# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                      PORTS               NAMES
+8cfad47f5b98        alpine              "ash"                    22 hours ago        Exited (137) 22 hours ago                       festive_mclean
+674e6b7e76b8        nginx               "nginx -g 'daemon of…"   22 hours ago        Exited (0) 22 hours ago                         kind_euclid
+1314a58c80c0        alpine              "echo hello world"       22 hours ago        Exited (0) 22 hours ago                         awesome_proskuriakova
+d81c8d39abc9        hello-world         "/hello"                 23 hours ago        Exited (0) 23 hours ago                         flamboyant_haibt
+root@ip-172-31-6-218:/home/ubuntu# docker run --name fruit-list -d -p 8080:80 fruit-list:1.0.0
+Unable to find image 'fruit-list:1.0.0' locally
+docker: Error response from daemon: pull access denied for fruit-list, repository does not exist or may require 'docker login'.
+See 'docker run --help'.
+root@ip-172-31-6-218:/home/ubuntu# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+<none>              <none>              a78251627ebe        3 minutes ago       126MB
+ubuntu              latest              775349758637        13 days ago         64.2MB
+nginx               latest              540a289bab6c        3 weeks ago         126MB
+alpine              latest              965ea09ff2eb        3 weeks ago         5.55MB
+tomcat              7                   e3a393545a10        3 weeks ago         506MB
+nginx               1.15.8              f09fe80eb0e7        9 months ago        109MB
+hello-world         latest              fce289e99eb9        10 months ago       1.84kB
+root@ip-172-31-6-218:/home/ubuntu# docker build -t fruit-list:1.0.0 .
+Sending build context to Docker daemon  24.06kB
+Step 1/7 : FROM nginx:1.15.8
+ ---> f09fe80eb0e7
+Step 2/7 : RUN apt-get update
+ ---> Using cache
+ ---> ffe483e8dfbb
+Step 3/7 : WORKDIR /usr/share/nginx/html
+ ---> Using cache
+ ---> a78251627ebe
+Step 4/7 : ADD ./fruitproject/share/fruit.json ./
+ADD failed: stat /var/lib/docker/tmp/docker-builder327524685/fruitproject/share/fruit.json: no such file or directory
+root@ip-172-31-6-218:/home/ubuntu# vi Dockerfile
+root@ip-172-31-6-218:/home/ubuntu# docker run --name fruit-list -d -p 8080:80 fruit-list:1.0.0
+Unable to find image 'fruit-list:1.0.0' locally
+docker: Error response from daemon: pull access denied for fruit-list, repository does not exist or may require 'docker login'.
+See 'docker run --help'.
+root@ip-172-31-6-218:/home/ubuntu# vi Dockerfile
+root@ip-172-31-6-218:/home/ubuntu# docker build -t fruit-list:1.0.0 .
+Sending build context to Docker daemon  24.06kB
+Step 1/7 : FROM nginx:1.15.8
+ ---> f09fe80eb0e7
+Step 2/7 : RUN apt-get update
+ ---> Using cache
+ ---> ffe483e8dfbb
+Step 3/7 : WORKDIR /usr/share/nginx/html
+ ---> Using cache
+ ---> a78251627ebe
+Step 4/7 : ADD ./fruitproject/static/fruit.json ./
+ ---> 3d0f4d8e7bfe
+Step 5/7 : WORKDIR /etc/nginx
+ ---> Running in f6bed3ecaac5
+Removing intermediate container f6bed3ecaac5
+ ---> 7bcacd3ddfff
+Step 6/7 : ADD ./fruitproject/nginx.conf ./
+ ---> d4527622c232
+Step 7/7 : EXPOSE 80
+ ---> Running in 0325b7f0e65e
+Removing intermediate container 0325b7f0e65e
+ ---> e172624c71b9
+Successfully built e172624c71b9
+Successfully tagged fruit-list:1.0.0
+root@ip-172-31-6-218:/home/ubuntu# docker run --name fruit-list -d -p 8080:80 fruit-list:1.0.0
+223be4d8009cc38c89051f74c96fec9a6f17fd0ad5cce7f554a03944d9d4d46a
+root@ip-172-31-6-218:/home/ubuntu# curl localhost:8080
+{
+  "description": "A list of fruits.",
+  "fruits": [
+    "apple",
+    "apricot",
+    "avocado",
+    "banana",
+    "bell pepper",
+    "bilberry",
+    "blackberry",
+    "blackcurrant",
+    "blood orange",
+    "blueberry",
+    "boysenberry",
+    "breadfruit",
+    "canary melon",
+    "cantaloupe",
+    "cherimoya",
+    "cherry",
+    "chili pepper",
+    "clementine",
+    "cloudberry",
+    "coconut",
+    "cranberry",
+    "cucumber",
+    "currant",
+    "damson",
+    "date",
+    "dragonfruit",
+    "durian",
+    "eggplant",
+    "elderberry",
+    "feijoa",
+    "fig",
+    "goji berry",
+    "gooseberry",
+    "grape",
+    "grapefruit",
+    "guava",
+    "honeydew",
+    "huckleberry",
+    "jackfruit",
+    "jambul",
+    "jujube",
+    "kiwi fruit",
+    "kumquat",
+    "lemon",
+    "lime",
+    "loquat",
+    "lychee",
+    "mandarine",
+    "mango",
+    "mulberry",
+    "nectarine",
+    "nut",
+    "olive",
+    "orange",
+    "pamelo",
+    "papaya",
+    "passionfruit",
+    "peach",
+    "pear",
+    "persimmon",
+    "physalis",
+    "pineapple",
+    "plum",
+    "pomegranate",
+    "pomelo",
+    "purple mangosteen",
+    "quince",
+    "raisin",
+    "rambutan",
+    "raspberry",
+    "redcurrant",
+    "rock melon",
+    "salal berry",
+    "satsuma",
+    "star fruit",
+    "strawberry",
+    "tamarillo",
+    "tangerine",
+    "tomato",
+    "ugli fruit",
+    "watermelon"
+  ]
+}
+root@ip-172-31-6-218:/home/ubuntu# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED              SIZE
+fruit-list          1.0.0               e172624c71b9        About a minute ago   126MB
+ubuntu              latest              775349758637        13 days ago          64.2MB
+nginx               latest              540a289bab6c        3 weeks ago          126MB
+alpine              latest              965ea09ff2eb        3 weeks ago          5.55MB
+tomcat              7                   e3a393545a10        3 weeks ago          506MB
+nginx               1.15.8              f09fe80eb0e7        9 months ago         109MB
+hello-world         latest              fce289e99eb9        10 months ago        1.84kB
+root@ip-172-31-6-218:/home/ubuntu# client_loop: send disconnect: Connection reset by peer
 
 
  
