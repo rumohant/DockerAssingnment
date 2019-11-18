@@ -219,6 +219,28 @@ Deleted: sha256:565879c6effe6a013e0b2e492f182b40049f1c083fc582ef61e49a98dca23f7e
 Deleted: sha256:cc967c529ced563b7746b663d98248bc571afdb3c012019d7f54d6c092793b8b
 
 
-Step11---->
+Step11----> 
+
+ubuntu@ip-172-31-6-218:~$ docker pull localhost:443/ubuntu:1
+1: Pulling from ubuntu
+7ddbc47eeb70: Pull complete
+c1bbdc448b72: Pull complete
+8c3b70e39044: Pull complete
+45d437916d57: Pull complete
+Digest: sha256:134c7fe821b9d359490cd009ce7ca322453f4f2d018623f849e580a89a685e5d
+Status: Downloaded newer image for localhost:443/ubuntu:1
+ubuntu@ip-172-31-6-218:~$ docker images
+REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
+fruit-list             1.0.0               e172624c71b9        25 hours ago        126MB
+localhost:443/ubuntu   1                   775349758637        2 weeks ago         64.2MB
+nginx                  latest              540a289bab6c        3 weeks ago         126MB
+alpine                 latest              965ea09ff2eb        3 weeks ago         5.55MB
+tomcat                 7                   e3a393545a10        3 weeks ago         506MB
+registry               2                   f32a97de94e1        8 months ago        25.8MB
+nginx                  1.15.8              f09fe80eb0e7        9 months ago        109MB
+hello-world            latest              fce289e99eb9        10 months ago       1.84kB
+
+
+
 
 
