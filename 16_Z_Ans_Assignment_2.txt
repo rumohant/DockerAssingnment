@@ -1,0 +1,224 @@
+Your company has recently decided to use Docker to run containers in production. They have built some Docker images to run their own proprietary software and need a place to store and manage these images. You have been asked to build a secure, private Docker registry for use by the company. In order to verify that everything works, you have also been asked to configure a Docker workstation server to push to and pull from the registry.
+
+To complete this lab, ensure that the following requirements are met for the registry:
+
+1. A private Docker registry is running on the Docker registry server using version 2 of the registry image.
+2. The container name for the registry should be registry.
+3. The registry should always automatically restart if it stops or the Docker daemon or server restarts.
+4. The registry should require authentication. Set up an initial account with the username docker and the password d0ck3rrU73z.
+5. The registry should use TLS with a self-signed certificate.
+6. The registry should listen on port 443.
+
+
+Set up the Docker workstation server to meet the following requirements:
+
+1. Docker is logged in to the private registry.
+2. Docker is configured to accept the self-signed cert. Do not turn off certificate verification using the insecure-registries setting.
+3. To confirm that everything is working, push a test image called ip-10-0-1-101:443/test-image:1 to the private registry. You can pull any image from Docker hub and tag it with ip-10-0-1-101:443/test-image:1 as a test.
+4. Delete the test image locally and pull it from the registry.
+
+[NOTE: Write the series of commands to achieve above in this file below the question scenario with documentation]
+
+Step1----> 
+ubuntu@ip-172-31-6-218:~$ mkdir registry
+ubuntu@ip-172-31-6-218:~$ cd registry
+ubuntu@ip-172-31-6-218:~/registry$ mkdir auth
+ubuntu@ip-172-31-6-218:~/registry$ cd auth
+ubuntu@ip-172-31-6-218:~/registry/auth$ ls
+ubuntu@ip-172-31-6-218:~/registry/auth$ pwd
+/home/ubuntu/registry/auth
+
+Step2---> 
+ubuntu@ip-172-31-6-218:~/registry$ docker run --entrypoint htpasswd registry:2 -Bbn docker d0ck3rrU73z > auth/htpasswd
+docker: Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post http://%2Fvar%2Frun%2Fdocker.sock/v1.39/containers/create: dial unix /var/run/docker.sock: connect: permission denied.
+See 'docker run --help'.
+ubuntu@ip-172-31-6-218:~/registry$ sudo chmod 777 /var/run/docker.sock
+
+ubuntu@ip-172-31-6-218:~/registry$ docker run --entrypoint htpasswd registry:2 -Bbn docker d0ck3rrU73z > auth/htpasswd
+Unable to find image 'registry:2' locally
+2: Pulling from library/registry
+c87736221ed0: Pulling fs layer
+1cc8e0bb44df: Pulling fs layer
+54d33bcb37f5: Pulling fs layer
+e8afc091c171: Pulling fs layer
+b4541f6d3db6: Pulling fs layer
+e8afc091c171: Waiting
+b4541f6d3db6: Waiting
+1cc8e0bb44df: Verifying Checksum
+1cc8e0bb44df: Download complete
+c87736221ed0: Verifying Checksum
+c87736221ed0: Download complete
+54d33bcb37f5: Verifying Checksum
+54d33bcb37f5: Download complete
+e8afc091c171: Verifying Checksum
+e8afc091c171: Download complete
+b4541f6d3db6: Verifying Checksum
+b4541f6d3db6: Download complete
+c87736221ed0: Pull complete
+1cc8e0bb44df: Pull complete
+54d33bcb37f5: Pull complete
+e8afc091c171: Pull complete
+b4541f6d3db6: Pull complete
+Digest: sha256:8004747f1e8cd820a148fb7499d71a76d45ff66bac6a29129bfdbfdc0154d146
+Status: Downloaded newer image for registry:2
+
+Step3----> ubuntu@ip-172-31-6-218:~/registry$ cd auth
+ubuntu@ip-172-31-6-218:~/registry/auth$ ls
+htpasswd
+ubuntu@ip-172-31-6-218:~/registry/auth$ cat htpasswd
+docker:$2y$05$/19lVN8HfGQf1kuUBeXu3.RRqfAK45BquDhPAFtX.nI4nJpz6a4Eu (Encrypted Pwd for above username)
+
+
+
+Step4 ---> Inside auth certs directory
+			ubuntu@ip-172-31-6-218:~/registry/auth$ mkdir certs
+
+Step5 ---> writing and generating Primary Key
+			openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key -x509 -days 365 -out certs/domain.crt
+			openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key -x509 -days 365 -out certs/domain.crt
+O/P---> 
+Can't load /home/ubuntu/.rnd into RNG
+140310389092800:error:2406F079:random number generator:RAND_load_file:Cannot open file:../crypto/rand/randfile.c:88:Filename=/home/ubuntu/.rnd
+Generating a RSA private key
+..................................................................................................................................................................................++++
+....................................................................................................++++
+writing new private key to 'certs/domain.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:
+State or Province Name (full name) [Some-State]:
+Locality Name (eg, city) []:
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:
+Organizational Unit Name (eg, section) []:
+Common Name (e.g. server FQDN or YOUR name) []:
+Email Address []:
+
+
+Step6-----> 
+			ubuntu@ip-172-31-6-218:~/registry/auth$ cd certs
+ubuntu@ip-172-31-6-218:~/registry/auth/certs$ ls
+domain.crt  domain.key
+
+
+Step7----> 
+
+  ubuntu@ip-172-31-6-218:~/registry/auth$
+ubuntu@ip-172-31-6-218:~/registry/auth$ cd certs
+ubuntu@ip-172-31-6-218:~/registry/auth/certs$ ls
+domain.crt  domain.key
+ubuntu@ip-172-31-6-218:~/registry/auth/certs$ pwd
+/home/ubuntu/registry/auth/certs
+ubuntu@ip-172-31-6-218:~/registry/auth/certs$ cd ..
+ubuntu@ip-172-31-6-218:~/registry/auth$ pwd
+/home/ubuntu/registry/auth
+ubuntu@ip-172-31-6-218:~/registry/auth$
+ubuntu@ip-172-31-6-218:~/registry/auth$
+
+Step8----> 
+
+ubuntu@ip-172-31-6-218:~/registry/auth$  docker run -d -p 443:443 --restart=always --name registry -v /home/ubuntu/registry/auth:/auth -e REGISTRY_HTTP_ADDR=0.0.0.0:443 -e REGISTRY_AUTH=htpasswd -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd -v /home/ubuntu/registry/auth/certs:/certs -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key registry:2
+3c9f69980ecfdf93341bc03d29db71848d68ed763801e810b5f857ee0af2b436
+74664132e1fcebccb203eb0329223830df3ee5f97a9c068b572bf45b0ac5f3bd
+ubuntu@ip-172-31-6-218:~/registry/auth$ 3c9f69980ecfdf93341bc03d29db71848d68ed763801e810b5f857ee0af2b436
+3c9f69980ecfdf93341bc03d29db71848d68ed763801e810b5f857ee0af2b436: command not found
+ubuntu@ip-172-31-6-218:~/registry/auth$ docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                            NAMES
+74664132e1fc        registry:2          "/entrypoint.sh /etc…"   26 seconds ago      Up 25 seconds       0.0.0.0:443->443/tcp, 5000/tcp   registry
+223be4d8009c        fruit-list:1.0.0    "nginx -g 'daemon of…"   25 hours ago        Up 25 hours         0.0.0.0:8080->80/tcp             fruit-list
+ubuntu@ip-172-31-6-218:~/registry/auth$ docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                      PORTS                            NAMES
+74664132e1fc        registry:2          "/entrypoint.sh /etc…"   43 seconds ago      Up 41 seconds               0.0.0.0:443->443/tcp, 5000/tcp   registry
+ba1b17d8e218        registry:2          "htpasswd -Bbn docke…"   13 minutes ago      Exited (0) 13 minutes ago                                    gifted_hodgkin
+223be4d8009c        fruit-list:1.0.0    "nginx -g 'daemon of…"   25 hours ago        Up 25 hours                 0.0.0.0:8080->80/tcp             fruit-list
+8cfad47f5b98        alpine              "ash"                    47 hours ago        Exited (137) 47 hours ago                                    festive_mclean
+674e6b7e76b8        nginx               "nginx -g 'daemon of…"   47 hours ago        Exited (0) 47 hours ago                                      kind_euclid
+1314a58c80c0        alpine              "echo hello world"       47 hours ago        Exited (0) 47 hours ago                                      awesome_proskuriakova
+d81c8d39abc9        hello-world         "/hello"                 2 days ago          Exited (0) 2 days ago                                        flamboyant_haibt
+ubuntu@ip-172-31-6-218:~/registry/auth$ docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS                      PORTS                            NAMES
+74664132e1fc        registry:2          "/entrypoint.sh /etc…"   About a minute ago   Up About a minute           0.0.0.0:443->443/tcp, 5000/tcp   registry
+ba1b17d8e218        registry:2          "htpasswd -Bbn docke…"   13 minutes ago       Exited (0) 13 minutes ago                                    gifted_hodgkin
+223be4d8009c        fruit-list:1.0.0    "nginx -g 'daemon of…"   25 hours ago         Up 25 hours                 0.0.0.0:8080->80/tcp             fruit-list
+8cfad47f5b98        alpine              "ash"                    47 hours ago         Exited (137) 47 hours ago                                    festive_mclean
+674e6b7e76b8        nginx               "nginx -g 'daemon of…"   47 hours ago         Exited (0) 47 hours ago                                      kind_euclid
+1314a58c80c0        alpine              "echo hello world"       2 days ago           Exited (0) 2 days ago                                        awesome_proskuriakova
+d81c8d39abc9        hello-world         "/hello"                 2 days ago           Exited (0) 2 days ago                                        flamboyant_haibt
+ubuntu@ip-172-31-6-218:~/registry/auth$ cd..
+cd..: command not found
+ubuntu@ip-172-31-6-218:~/registry/auth$ cd ..
+ubuntu@ip-172-31-6-218:~/registry$ cd ..
+ubuntu@ip-172-31-6-218:~$ pwd
+/home/ubuntu
+ubuntu@ip-172-31-6-218:~$ docker login localhost:443
+Username: docker
+Password:
+WARNING! Your password will be stored unencrypted in /home/ubuntu/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+
+Step 9---->
+
+	Login Succeeded
+ubuntu@ip-172-31-6-218:~$ docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+fruit-list          1.0.0               e172624c71b9        25 hours ago        126MB
+ubuntu              latest              775349758637        2 weeks ago         64.2MB
+nginx               latest              540a289bab6c        3 weeks ago         126MB
+alpine              latest              965ea09ff2eb        3 weeks ago         5.55MB
+tomcat              7                   e3a393545a10        3 weeks ago         506MB
+registry            2                   f32a97de94e1        8 months ago        25.8MB
+nginx               1.15.8              f09fe80eb0e7        9 months ago        109MB
+hello-world         latest              fce289e99eb9        10 months ago       1.84kB
+
+ubuntu@ip-172-31-6-218:~$ docker tag  ubuntu localhost:443/ubuntu:1
+ubuntu@ip-172-31-6-218:~$ docker images
+REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
+fruit-list             1.0.0               e172624c71b9        25 hours ago        126MB
+ubuntu                 latest              775349758637        2 weeks ago         64.2MB
+localhost:443/ubuntu   1                   775349758637        2 weeks ago         64.2MB
+nginx                  latest              540a289bab6c        3 weeks ago         126MB
+alpine                 latest              965ea09ff2eb        3 weeks ago         5.55MB
+tomcat                 7                   e3a393545a10        3 weeks ago         506MB
+registry               2                   f32a97de94e1        8 months ago        25.8MB
+nginx                  1.15.8              f09fe80eb0e7        9 months ago        109MB
+hello-world            latest              fce289e99eb9        10 months ago       1.84kB
+ubuntu@ip-172-31-6-218:~$ docker push localhost:443/ubuntu:1
+The push refers to repository [localhost:443/ubuntu]
+e0b3afb09dc3: Pushed
+6c01b5a53aac: Pushed
+2c6ac8e5063e: Pushed
+cc967c529ced: Pushed
+1: digest: sha256:134c7fe821b9d359490cd009ce7ca322453f4f2d018623f849e580a89a685e5d size: 1152
+
+Step 10---->
+ubuntu@ip-172-31-6-218:~$ docker rmi localhost:443/ubuntu:1 ubuntu
+Untagged: localhost:443/ubuntu:1
+Untagged: localhost:443/ubuntu@sha256:134c7fe821b9d359490cd009ce7ca322453f4f2d018623f849e580a89a685e5d
+Untagged: ubuntu:latest
+Untagged: ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d
+Deleted: sha256:775349758637aff77bf85e2ff0597e86e3e859183ef0baba8b3e8fc8d3cba51c
+Deleted: sha256:4fc26b0b0c6903db3b4fe96856034a1bd9411ed963a96c1bc8f03f18ee92ac2a
+Deleted: sha256:b53837dafdd21f67e607ae642ce49d326b0c30b39734b6710c682a50a9f932bf
+Deleted: sha256:565879c6effe6a013e0b2e492f182b40049f1c083fc582ef61e49a98dca23f7e
+Deleted: sha256:cc967c529ced563b7746b663d98248bc571afdb3c012019d7f54d6c092793b8b
+
+
+Step11---->
+
+
