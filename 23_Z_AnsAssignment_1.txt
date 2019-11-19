@@ -1,0 +1,304 @@
+Your supermarket company is working on expanding their Docker infrastructure. They have an existing service that provides a list of fruit sold in their stores. After measuring the amount of load on this service, they have asked you to scale this service up to a higher number of replicas.
+
+In addition, there is a new service that provides a list of vegetables. This new service needs to be created in the cluster. Set up the swarm cluster to complete the lab, ensure that the swarm meets the following specifications:
+
+1. Scale the service called products-fruit to 5 replicas.
+2. Create a new service called products-vegetables running the linuxacademycontent/vegetable-service:1.0.0 image.
+3. Publish products-vegetables on port 8081. The application listens on port 80.
+4. Run products-vegetables with 3 replicas.
+
+You can test the products-fruit service from any swarm node (including the manager) with curl localhost:8080.
+
+Once products-vegetables is running, you should be able to test it from any swarm node (including the manager) with curl localhost:8081.
+
+Answers----->>>>>>
+
+1. Scale the service called products-fruit to 5 replicas.
+
+Step1---> ubuntu@ip-172-31-6-218:~$ docker pull linuxacademycontent/fruit-service:1.0.0
+1.0.0: Pulling from linuxacademycontent/fruit-service
+6ae821421a7d: Already exists
+da4474e5966c: Already exists
+eb2aec2b9c9f: Already exists
+6db9559a05fd: Pull complete
+2d0ed4a8f229: Pull complete
+Digest: sha256:c904541d6a51932256baaa1163c2b7947c4bc7168439631d931f08c6f7635112
+Status: Downloaded newer image for linuxacademycontent/fruit-service:1.0.0
+
+
+Step2  ---> ubuntu@ip-172-31-6-218:~$ docker swarm init --advertise-addr 172.31.6.218
+Swarm initialized: current node (307c7qdf1aqkgcaikc0h7q3aa) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-2j8o8wbb825eij33i5ijmr973zyc3xylt5vjnpyol4ye23q221-cnpzm3p1jxgg9gxpsapoi09eu 172.31.6.218:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+ubuntu@ip-172-31-6-218:~$ docker service create -p 8080:80 --replicas 5 --name products-fruit linuxacademycontent/fruit-service:1.0.0
+0zas4tu63mh44m7s3vsyk1t85
+overall progress: 5 out of 5 tasks
+1/5: running   [==================================================>]
+2/5: running   [==================================================>]
+3/5: running   [==================================================>]
+4/5: running   [==================================================>]
+5/5: running   [==================================================>]
+verify: Service converged
+
+
+2. Create a new service called products-vegetables running the linuxacademycontent/vegetable-service:1.0.0 image.
+
+step 3--->>>> ubuntu@ip-172-31-6-218:~$ docker pull linuxacademycontent/vegetable-service:1.0.0
+1.0.0: Pulling from linuxacademycontent/vegetable-service
+6ae821421a7d: Already exists
+da4474e5966c: Already exists
+eb2aec2b9c9f: Already exists
+3e55604f8d01: Pull complete
+45cded7731f3: Pull complete
+Digest: sha256:958b5932d3b926d77efe4b1b2083060de28054d153daabdbc584c3bda2523958
+
+
+3. Publish products-vegetables on port 8081. The application listens on port 80.
+
+Step4---->    ubuntu@ip-172-31-6-218:~$ docker service create -p 8081:80 --replicas 1 --name products-vegetables2 linuxacademycontent/vegetable-service:1.0.0
+7kk8hhfrfw57gycklvdjhcw4j
+overall progress: 1 out of 1 tasks
+1/1: running   [==================================================>]
+verify: Service converged
+
+
+4. Run products-vegetables with 3 replicas.
+
+Step 5----> ubuntu@ip-172-31-6-218:~$ docker service scale products-vegetables2=3
+products-vegetables2 scaled to 3
+overall progress: 3 out of 3 tasks
+1/3: running   [==================================================>]
+2/3: running   [==================================================>]
+3/3: running   [==================================================>]
+verify: Service converged
+
+
+
+Step6---> You can test the products-fruit service from any swarm node (including the manager) with curl localhost:8080.
+	#we hit the below link it will show you all fruits list...
+	curl  172.31.6.218:8080
+
+ubuntu@ip-172-31-6-218:~$ curl  172.31.6.218:8080
+{
+  "description": "A list of fruits.",
+  "fruits": [
+    "apple",
+    "apricot",
+    "avocado",
+    "banana",
+    "bell pepper",
+    "bilberry",
+    "blackberry",
+    "blackcurrant",
+    "blood orange",
+    "blueberry",
+    "boysenberry",
+    "breadfruit",
+    "canary melon",
+    "cantaloupe",
+    "cherimoya",
+    "cherry",
+    "chili pepper",
+    "clementine",
+    "cloudberry",
+    "coconut",
+    "cranberry",
+    "cucumber",
+    "currant",
+    "damson",
+    "date",
+    "dragonfruit",
+    "durian",
+    "eggplant",
+    "elderberry",
+    "feijoa",
+    "fig",
+    "goji berry",
+    "gooseberry",
+    "grape",
+    "grapefruit",
+    "guava",
+    "honeydew",
+    "huckleberry",
+    "jackfruit",
+    "jambul",
+    "jujube",
+    "kiwi fruit",
+    "kumquat",
+    "lemon",
+    "lime",
+    "loquat",
+    "lychee",
+    "mandarine",
+    "mango",
+    "mulberry",
+    "nectarine",
+    "nut",
+    "olive",
+    "orange",
+    "pamelo",
+    "papaya",
+    "passionfruit",
+    "peach",
+    "pear",
+    "persimmon",
+    "physalis",
+    "pineapple",
+    "plum",
+    "pomegranate",
+    "pomelo",
+    "purple mangosteen",
+    "quince",
+    "raisin",
+    "rambutan",
+    "raspberry",
+    "redcurrant",
+    "rock melon",
+    "salal berry",
+    "satsuma",
+    "star fruit",
+    "strawberry",
+    "tamarillo",
+    "tangerine",
+    "tomato",
+    "ugli fruit",
+    "watermelon"
+  ]
+}
+
+Stp8----> Once products-vegetables is running, you should be able to test it from any swarm node (including the manager) with curl localhost:8081.
+
+curl  172.31.6.218:8081
+
+ubuntu@ip-172-31-6-218:~$ curl  172.31.6.218:8081
+{
+    "description": "A list of vegetables.",
+    "vegetables": [
+        "acorn squash",
+        "alfalfa sprout",
+        "amaranth",
+        "anise",
+        "artichoke",
+        "arugula",
+        "asparagus",
+        "aubergine",
+        "azuki bean",
+        "banana squash",
+        "basil",
+        "bean sprout",
+        "beet",
+        "black bean",
+        "black-eyed pea",
+        "bok choy",
+        "borlotti bean",
+        "broad beans",
+        "broccoflower",
+        "broccoli",
+        "brussels sprout",
+        "butternut squash",
+        "cabbage",
+        "calabrese",
+        "caraway",
+        "carrot",
+        "cauliflower",
+        "cayenne pepper",
+        "celeriac",
+        "celery",
+        "chamomile",
+        "chard",
+        "chayote",
+        "chickpea",
+        "chives",
+        "cilantro",
+        "collard green",
+        "corn",
+        "corn salad",
+        "courgette",
+        "cucumber",
+        "daikon",
+        "delicata",
+        "dill",
+        "eggplant",
+        "endive",
+        "fennel",
+        "fiddlehead",
+        "frisee",
+        "garlic",
+        "gem squash",
+        "ginger",
+        "green bean",
+        "green pepper",
+        "habanero",
+        "herbs and spice",
+        "horseradish",
+        "hubbard squash",
+        "jalapeno",
+        "jerusalem artichoke",
+        "jicama",
+        "kale",
+        "kidney bean",
+        "kohlrabi",
+        "lavender",
+        "leek ",
+        "legume",
+        "lemon grass",
+        "lentils",
+        "lettuce",
+        "lima bean",
+        "mamey",
+        "mangetout",
+        "marjoram",
+        "mung bean",
+        "mushroom",
+        "mustard green",
+        "navy bean",
+        "new zealand spinach",
+        "nopale",
+        "okra",
+        "onion",
+        "oregano",
+        "paprika",
+        "parsley",
+        "parsnip",
+        "patty pan",
+        "pea",
+        "pinto bean",
+        "potato",
+        "pumpkin",
+        "radicchio",
+        "radish",
+        "rhubarb",
+        "rosemary",
+        "runner bean",
+        "rutabaga",
+        "sage",
+        "scallion",
+        "shallot",
+        "skirret",
+        "snap pea",
+        "soy bean",
+        "spaghetti squash",
+        "spinach",
+        "squash ",
+        "sweet potato",
+        "tabasco pepper",
+        "taro",
+        "tat soi",
+        "thyme",
+        "topinambur",
+        "tubers",
+        "turnip",
+        "wasabi",
+        "water chestnut",
+        "watercress",
+        "white radish",
+        "yam",
+        "zucchini"
+    ]
+}
+	
