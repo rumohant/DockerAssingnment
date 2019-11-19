@@ -1,0 +1,358 @@
+upermarket company is in the process of improving their Docker-based applications. They have built a set of three RESTful data services that communicate with each other as part of a larger infrastructure. You have been given the task of designing a Docker application stack so that these three services can be easily managed and scaled as a unit. A Docker Swarm cluster has already been set up by you to use in previous execises.
+
+Here is some background information on the three services:
+
+1. Fruit Service
+	a. Provides a list of fruits sold in the company's stores.
+	b. You can use the Docker image tag linuxacademycontent/fruit-service:1.0.1 to run this service.
+	c. Listens on port 80.
+	d. The service should be named fruit inside the stack.
+
+2. Vegetable Service
+	a. Provides a list of vegetables sold in the company's stores.
+	b. You can use the Docker image tag linuxacademycontent/vegetable-service:1.0.0 to run this service.
+	c. Listens on port 80.
+	d. The service should be named vegetables inside the stack.
+
+3. All Products Service
+	a. Queries the other two services, combining their data into a single list of all produce.
+	b. You can use the Docker image tag linuxacademycontent/all-products:1.0.0 to run this service.
+	c. Listens on port 80.
+	d. Use the environment variables FRUIT_HOST and FRUIT_PORT to set the host and port which will be used to query the fruit service.
+	e. Use the environment variables VEGETABLE_HOST and VEGETABLE_PORT to set the host and port which will be used to query the vegetable service.
+
+Step 1
+Deploy a Docker application stack that meets the following specifications:
+1. The stack is called produce.
+2. The stack runs the Fruit, Vegetable, and All Products services.
+3. The All Products service is able to query the Fruit and Vegetable services.
+4. The All Products service is published on port 8080.
+
+One you have deployed the stack, you can verify whether it is working by querying the All Products service:
+
+curl localhost:8080
+
+If the stack is set up correctly, you should get a combined list of fruits and vegetables.
+
+Step 2
+Once you have deployed the stack and verified that it is working, modify the stack by scaling both the Fruit and Vegetable services up to 3 replicas.
+
+
+ANSWER----------------->
+
+Step 1------> 
+
+Master Node
+ubuntu@ip-172-31-31-224:~$ docker swarm init
+Swarm initialized: current node (ttau8plfgq3kl22ip3df7n1o6) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-06tppbmosfleqj1hu3bajgrs2k5gvx1ihhg1cu3mkg4gevod94-8vw6xqoyu0hltv1qbdmzpd2wm 172.31.31.224:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+ubuntu@ip-172-31-31-224:~$ docker swarm
+
+Step2----->
+
+Create yml file named as products.yml
+ubuntu@ip-172-31-31-224:~$ vi products.yml
+
+version: '3'
+services: 
+ fruit: 
+  image: linuxacademycontent/fruit-service:1.0.1
+  ports:
+   - 8082:80
+  environment:
+   - FRUIT_HOST= 172.31.31.224
+   - FRUIT_PORT=8082
+ vegetable:
+  image: linuxacademycontent/vegetable-service:1.0.0
+  ports:
+   - 8081:80
+  environment:
+   - VEGETABLE_HOST= 172.31.31.224
+   - VEGETABLE_PORT=8081
+ allproduct:
+  image: linuxacademycontent/all-products:1.0.0
+  ports:
+   - 8080:80
+  environment:
+   - VEGETABLE_HOST= 172.31.31.224
+   - VEGETABLE_PORT=8081 
+   - FRUIT_HOST=172.31.31.224
+   - FRUIT_PORT=8082 
+   
+ Step3---->
+ 
+Deploy it on the swarm cluster to run 3 Services
+
+ubuntu@ip-172-31-31-224:~$ docker stack deploy -c products.yml products
+Creating network products_default
+Creating service products_vegetable
+Creating service products_allproduct
+Creating service products_fruit
+
+Step4 ---> Checking all the list of Docker services
+ ubuntu@ip-172-31-31-224:~$ docker service ls
+ID                  NAME                  MODE                REPLICAS            IMAGE                                         PORTS
+azg21hvt4mkm        products_allproduct   replicated          1/1                 linuxacademycontent/all-products:1.0.0        *:8080->80/tcp
+o4iyvk0vxakl        products_fruit        replicated          1/1                 linuxacademycontent/fruit-service:1.0.1       *:8082->80/tcp
+nlw3vnufunuu        products_vegetable    replicated          1/1                 linuxacademycontent/vegetable-service:1.0.0   *:8081->80/tcp
+
+Step 5--------> Checking the running services
+	
+	ubuntu@ip-172-31-31-224:~$ docker ps -a
+CONTAINER ID        IMAGE                                         COMMAND                  CREATED             STATUS                     PORTS               NAMES
+4e287ad4d869        linuxacademycontent/all-products:1.0.0        "node index.js"          2 minutes ago       Up 2 minutes                                   products_allproduct.1.w0q12n5zgn7org8gg4qkxzq5o
+3b0028bfb4ce        linuxacademycontent/vegetable-service:1.0.0   "nginx -g 'daemon of…"   3 minutes ago       Up 2 minutes               80/tcp              products_vegetable.1.yq0w8rd7tn8lpcd680m0w9li6
+20ce50d65c37        linuxacademycontent/fruit-service:1.0.1       "nginx -g 'daemon of…"   3 minutes ago       Up 2 minutes               80/tcp              products_fruit.1.02s72h0no4cdbcb23kq4rx7rt
+1ca68668d3fb        b7ddb82e1f04                                  "/bin/sh -c 'apt-get…"   6 days ago          Exited (100) 6 days ago                        dreamy_hugle
+ae4fd6984c22        5f9b4f4fc285                                  "/bin/sh -c 'apt-get…"   6 days ago          Exited (100) 6 days ago                        romantic_carson
+443fa4e2a43d        myfileimage                                   "/bin/bash"              8 days ago          Exited (0) 8 days ago                          objective_mcnulty
+59d5c7929668        myfileimage                                   "/bin/bash"              11 days ago         Up 11 days                                     gifted_lederberg
+12845801aac8        ubuntu                                        "/usr/bin/ top -b"       11 days ago         Created                                        topdemo01
+54ca73def134        ubuntu                                        "/bin/bash"              11 days ago         Exited (0) 11 days ago                         bold_gould
+a662bce10112        ubuntu                                        "/bin/bash"              11 days ago         Exited (0) 11 days ago                         con1
+432b5feb2c87        ubuntu                                        "/bin/bash"              12 days ago         Exited (0) 11 days ago                         bold_keldysh
+5437e2dcf25a        ubuntu                                        "/bin/bash"              12 days ago         Exited (127) 12 days ago                       modest_blackwell
+05ed2d0786d4        ubuntu                                        "/bin/bash"              12 days ago         Exited (0) 12 days ago                         pensive_antonelli
+caf80554e855        ubuntu                                        "/bin/bash"              12 days ago         Created                                        crazy_shirley
+aa63f46e83d6        ubuntu                                        "/bin/bash"              12 days ago         Exited (127) 12 days ago                       frosty_antonelli
+41f1e729eed6        tomcat:7                                      "catalina.sh run"        13 days ago         Exited (143) 13 days ago                       reverent_chatelet
+
+
+ Step 6------------>>>>>>> Dsplying the fruit service by curl
+ 
+ ubuntu@ip-172-31-31-224:~$ curl localhost:8082
+{
+  "description": "A list of fruits.",
+  "fruits": [
+    "apple",
+    "apricot",
+    "avocado",
+    "banana",
+    "bell pepper",
+    "bilberry",
+    "blackberry",
+    "blackcurrant",
+    "blood orange",
+    "blueberry",
+    "boysenberry",
+    "breadfruit",
+    "canary melon",
+    "cantaloupe",
+    "cherimoya",
+    "cherry",
+    "chili pepper",
+    "clementine",
+    "cloudberry",
+    "coconut",
+    "cranberry",
+    "cucumber",
+    "currant",
+    "damson",
+    "date",
+    "dragonfruit",
+    "durian",
+    "eggplant",
+    "elderberry",
+    "feijoa",
+    "fig",
+    "goji berry",
+    "gooseberry",
+    "grape",
+    "grapefruit",
+    "guava",
+    "honeydew",
+    "huckleberry",
+    "jackfruit",
+    "jambul",
+    "jujube",
+    "kiwi fruit",
+    "kumquat",
+    "lemon",
+    "lime",
+    "loquat",
+    "lychee",
+    "mandarine",
+    "mango",
+    "mulberry",
+    "nectarine",
+    "nut",
+    "olive",
+    "orange",
+    "pamelo",
+    "papaya",
+    "passionfruit",
+    "peach",
+    "pear",
+    "persimmon",
+    "physalis",
+    "pineapple",
+    "plum",
+    "pomegranate",
+    "pomelo",
+    "purple mangosteen",
+    "quince",
+    "raisin",
+    "rambutan",
+    "raspberry",
+    "redcurrant",
+    "rock melon",
+    "salal berry",
+    "satsuma",
+    "star fruit",
+    "strawberry",
+    "tamarillo",
+    "tangerine",
+    "tomato",
+    "ugli fruit",
+    "watermelon"
+  ]
+}
+
+
+Step7-----------> Displaying the Vegetable services by curl
+	curl localhost:8081
+
+ubuntu@ip-172-31-31-224:~$ curl localhost:8081
+{
+    "description": "A list of vegetables.",
+    "vegetables": [
+        "acorn squash",
+        "alfalfa sprout",
+        "amaranth",
+        "anise",
+        "artichoke",
+        "arugula",
+        "asparagus",
+        "aubergine",
+        "azuki bean",
+        "banana squash",
+        "basil",
+        "bean sprout",
+        "beet",
+        "black bean",
+        "black-eyed pea",
+        "bok choy",
+        "borlotti bean",
+        "broad beans",
+        "broccoflower",
+        "broccoli",
+        "brussels sprout",
+        "butternut squash",
+        "cabbage",
+        "calabrese",
+        "caraway",
+        "carrot",
+        "cauliflower",
+        "cayenne pepper",
+        "celeriac",
+        "celery",
+        "chamomile",
+        "chard",
+        "chayote",
+        "chickpea",
+        "chives",
+        "cilantro",
+        "collard green",
+        "corn",
+        "corn salad",
+        "courgette",
+        "cucumber",
+        "daikon",
+        "delicata",
+        "dill",
+        "eggplant",
+        "endive",
+        "fennel",
+        "fiddlehead",
+        "frisee",
+        "garlic",
+        "gem squash",
+        "ginger",
+        "green bean",
+        "green pepper",
+        "habanero",
+        "herbs and spice",
+        "horseradish",
+        "hubbard squash",
+        "jalapeno",
+        "jerusalem artichoke",
+        "jicama",
+        "kale",
+        "kidney bean",
+        "kohlrabi",
+        "lavender",
+        "leek ",
+        "legume",
+        "lemon grass",
+        "lentils",
+        "lettuce",
+        "lima bean",
+        "mamey",
+        "mangetout",
+        "marjoram",
+        "mung bean",
+        "mushroom",
+        "mustard green",
+        "navy bean",
+        "new zealand spinach",
+        "nopale",
+        "okra",
+        "onion",
+        "oregano",
+        "paprika",
+        "parsley",
+        "parsnip",
+        "patty pan",
+        "pea",
+        "pinto bean",
+        "potato",
+        "pumpkin",
+        "radicchio",
+        "radish",
+        "rhubarb",
+        "rosemary",
+        "runner bean",
+        "rutabaga",
+        "sage",
+        "scallion",
+        "shallot",
+        "skirret",
+        "snap pea",
+        "soy bean",
+        "spaghetti squash",
+        "spinach",
+        "squash ",
+        "sweet potato",
+        "tabasco pepper",
+        "taro",
+        "tat soi",
+        "thyme",
+        "topinambur",
+        "tubers",
+        "turnip",
+        "wasabi",
+        "water chestnut",
+        "watercress",
+        "white radish",
+        "yam",
+        "zucchini"
+    ]
+}
+
+Step 8----------> Displaying all-products-service by curl
+
+	curl localhost:8080
+	
+ubuntu@ip-172-31-31-224:~$ curl localhost:8080
+{"description":"A list of all produce.","products":["acorn squash","alfalfa sprout","amaranth","anise","apple","apricot","artichoke","arugula","asparagus","aubergine","avocado","azuki bean","banana","banana squash","basil","bean sprout","beet","bell pepper","bilberry","black bean","black-eyed pea","blackberry","blackcurrant","blood orange","blueberry","bok choy","borlotti bean","boysenberry","breadfruit","broad beans","broccoflower","broccoli","brussels sprout","butternut squash","cabbage","calabrese","canary melon","cantaloupe","caraway","carrot","cauliflower","cayenne pepper","celeriac","celery","chamomile","chard","chayote","cherimoya","cherry","chickpea","chili pepper","chives","cilantro","clementine","cloudberry","coconut","collard green","corn","corn salad","courgette","cranberry","cucumber","cucumber","currant","daikon","damson","date","delicata","dill","dragonfruit","durian","eggplant","eggplant","elderberry","endive","feijoa","fennel","fiddlehead","fig","frisee","garlic","gem squash","ginger","goji berry","gooseberry","grape","grapefruit","green bean","green pepper","guava","habanero","herbs and spice","honeydew","horseradish","hubbard squash","huckleberry","jackfruit","jalapeno","jambul","jerusalem artichoke","jicama","jujube","kale","kidney bean","kiwi fruit","kohlrabi","kumquat","lavender","leek ","legume","lemon","lemon grass","lentils","lettuce","lima bean","lime","loquat","lychee","mamey","mandarine","mangetout","mango","marjoram","mulberry","mung bean","mushroom","mustard green","navy bean","nectarine","new zealand spinach","nopale","nut","okra","olive","onion","orange","oregano","pamelo","papaya","paprika","parsley","parsnip","passionfruit","patty pan","pea","peach","pear","persimmon","physalis","pineapple","pinto bean","plum","pomegranate","pomelo","potato","pumpkin","purple mangosteen","quince","radicchio","radish","raisin","rambutan","raspberry","redcurrant","rhubarb","rock melon","rosemary","runner bean","rutabaga","sage","salal berry","satsuma","scallion","shallot","skirret","snap pea","soy bean","spaghetti squash","spinach","squash ","star fruit","strawberry","sweet potato","tabasco pepper","tamarillo","tangerine","taro","tat soi","thyme","tomato","topinambur","tubers","turnip","ugli fruit","wasabi","water chestnut","watercress","watermelon","white radish","yam","zucchini"]}ubuntu@ip-172-31-31-224:~$
+	
+
+
+ 
+
